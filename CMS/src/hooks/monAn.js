@@ -108,6 +108,18 @@ useEffect(()=>{
       setIsLoading(false);
     }
   };
+  const deleteFileMonAn = async (id) => {
+    setIsLoading(true);
+    try {
+      let res = await monAnApi.deleteFileMonAn(id);
+      if (res.data) {
+        setIsLoading(false);
+      }
+    } catch (error) {
+      enqueueSnackbar(error.response?.data?.message, { variant: "error" });
+      setIsLoading(false);
+    }
+  };
 
   return {
     isLoading,
@@ -120,6 +132,7 @@ useEffect(()=>{
     updateMonAn,
     createMonAn,
     getAllMonAns,
-    updateFileMonAn
+    updateFileMonAn,
+    deleteFileMonAn
   };
 };

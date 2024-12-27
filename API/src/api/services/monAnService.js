@@ -243,7 +243,7 @@ const monAnService = {
           },
         });
         if (!deleteFile) throw createError.NotFound("File not exist");
-        const filePath = `./${process.env.BASE_URL}/files/${deleteFile.NAME}`;
+        const filePath = `data/files/${deleteFile.NAME}`;
         fs.unlink(filePath, (err) => {
           if (err) {
             console.error(`Error deleting file: ${filePath}`, err);

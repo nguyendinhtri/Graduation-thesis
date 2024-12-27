@@ -33,7 +33,7 @@ if (process.env.DB_SYNC == "true") {
   console.log("DB is being synced...");
   sequelize
     .sync({
-      alter: true,
+      // alter: true,
       // force: true,
       logging: console.log,
     })

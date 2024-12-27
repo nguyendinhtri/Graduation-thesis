@@ -12,6 +12,7 @@ const ModalMonAn = ({
   isLoading,
   onUpdate,
   updateFileMonAn,
+  deleteFileMonAn,
   data,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -19,11 +20,16 @@ const ModalMonAn = ({
   const [form] = useForm();
   const [fileList, setFileList] = useState([]);
   const [avatar, setAvatar] = useState(undefined);
+  const [removeFile, setRemoveFile] = useState(undefined);
+  const [newFile, setNewFile] = useState([]);
+
   const onCancel = () => {
     form.resetFields();
     handleCancel();
     setAvatar(undefined);
     setFileList([]);
+    setRemoveFile(undefined);
+    setNewFile([]);
   };
 
   useEffect(() => {
@@ -31,6 +37,7 @@ const ModalMonAn = ({
       form.setFieldsValue({ ...data });
       setFileList([
         {
+          id: data?.Image_Foods?.[0]?.id,
           name: data?.Image_Foods?.[0]?.NAME,
           status: "done",
           url: `http://localhost:8345/files/${data?.Image_Foods?.[0]?.NAME}`,
@@ -41,6 +48,12 @@ const ModalMonAn = ({
   const handleOk = async () => {
     form.validateFields().then((values) => {
       if (data) {
+        if (removeFile) {
+          deleteFileMonAn(removeFile?.id);
+        }
+        if (newFile?.length) {
+          handleUpdateFileMonAn(data?.id);
+        }
         onUpdate(values, data?.id, () => onCancel());
       } else {
         handleCreate(values);
@@ -50,11 +63,11 @@ const ModalMonAn = ({
   const handleCreate = async (data) => {
     let res = await monAnApi.createMonAn(data);
     if (res.data) {
-      handleUpdateFileMonAn(res.data?.elements?.id);
+      handleUpLoadFileMonAn(res.data?.elements?.id);
       enqueueSnackbar(res?.data?.message, { variant: "success" });
     }
   };
-  const handleUpdateFileMonAn = (id) => {
+  const handleUpLoadFileMonAn = (id) => {
     let formData = new FormData();
     formData.append("FOOD_ID", id);
     if (avatar && avatar.originFileObj) {
@@ -62,12 +75,29 @@ const ModalMonAn = ({
     }
     updateFileMonAn(formData, () => onCancel());
   };
-  const onChange = ({ fileList: newFileList }) => {
-    let newImage = [...newFileList];
-    if (newImage && newImage.length > 0) {
-      newImage[0].status = "success";
+  const handleUpdateFileMonAn = (id) => {
+    let formData = new FormData();
+    formData.append("FOOD_ID", id);
+    if (newFile?.length && newFile?.[0].originFileObj) {
+      formData.append("uploadFile", newFile?.[0]?.originFileObj);
     }
-    setFileList(newImage);
+    updateFileMonAn(formData, () => {});
+  };
+  const onChange = ({ fileList: newFileList }) => {
+    if (data) {
+      let newImage = [...newFileList];
+      if (newImage && newImage.length > 0) {
+        newImage[0].status = "success";
+      }
+      setNewFile(newImage);
+      setFileList(newImage);
+    } else {
+      let newImage = [...newFileList];
+      if (newImage && newImage.length > 0) {
+        newImage[0].status = "success";
+      }
+      setFileList(newImage);
+    }
   };
   const onSelectFile = ({ fileList }) => {
     if (!fileList || fileList.length === 0) {
@@ -76,6 +106,10 @@ const ModalMonAn = ({
     }
     // I've kept this example simple by using the first image instead of multiple
     setAvatar(fileList[0]);
+  };
+  const onRemoveFile = (data) => {
+    setRemoveFile(data);
+    setFileList([]);
   };
   const onPreview = async (file) => {
     let src = file.url;
@@ -158,6 +192,7 @@ const ModalMonAn = ({
                   onSelectFile(e);
                 }}
                 onPreview={onPreview}
+                onRemove={onRemoveFile}
               >
                 {fileList.length < 1 && "+ Upload"}
               </Upload>

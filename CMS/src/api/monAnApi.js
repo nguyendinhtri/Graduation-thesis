@@ -21,6 +21,10 @@ const monAnApi = {
     const path = `/monan/uploadFileMonAn`;
     return axiosApiInstance.post(path, data);
   },
+  deleteFileMonAn: (id) => {
+    const path = `/monan/deleteFileMonAn/${id}`;
+    return axiosApiInstance.delete(path);
+  },
   updateMonAn: (data, id) => {
     const path = `/monan/updateMonAn/${id}`;
     return axiosApiInstance.patch(path, data);

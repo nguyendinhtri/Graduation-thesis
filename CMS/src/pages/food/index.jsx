@@ -22,6 +22,7 @@ const Foods = () => {
     updateMonAn,
     updateFileMonAn,
     deleteMonAn,
+    deleteFileMonAn,
   } = useMonAn();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -88,6 +89,7 @@ const Foods = () => {
         onCreate={createMonAn}
         onUpdate={updateMonAn}
         updateFileMonAn={updateFileMonAn}
+        deleteFileMonAn={deleteFileMonAn}
         data={dataSelect}
       />
     </div>
